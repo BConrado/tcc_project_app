@@ -18,13 +18,13 @@
 
     </androidx.recyclerview.widget.RecyclerView>
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
+    <Button
         android:id="@+id/bottom_nav"
-        android:layout_width="match_parent"
+        android:layout_width="116dp"
         android:layout_height="wrap_content"
+        android:text="New Run"
         app:layout_anchor="@+id/recyclerView"
-        app:layout_anchorGravity="bottom|center"
-        app:menu="@menu/bottom_menu" />
+        app:layout_anchorGravity="end|bottom" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

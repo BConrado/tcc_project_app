@@ -1,16 +1,18 @@
 package com.tcc.tcc_project;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 
 public class RunModel {
     public RunModel(double latitude, double longitude, long initialTime,
-                    long finalTime, double latitudeF, double longitudeF) {
+                    long finalTime, double latitudeF, double longitudeF, ArrayList<Integer> velocidades) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.initialTime = initialTime;
         this.finalTime = finalTime;
         this.latitudeF = latitudeF;
         this.longitudeF = longitudeF;
+        this.velocidades = velocidades;
     }
 
     private double latitude;
@@ -19,6 +21,16 @@ public class RunModel {
     private double longitudeF;
     private long initialTime;
     private long finalTime;
+
+    public ArrayList<Integer> getVelocidades() {
+        return velocidades;
+    }
+
+    public void setVelocidades(ArrayList<Integer> velocidades) {
+        this.velocidades = velocidades;
+    }
+
+    private ArrayList<Integer> velocidades;
 
     public double getLatitudeF() {
         return latitudeF;

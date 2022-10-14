@@ -19,6 +19,7 @@ import com.tcc.tcc_project.databinding.ActivityMainBinding;
 
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity implements RVInterface{
 
@@ -33,6 +34,15 @@ public class MainActivity extends AppCompatActivity implements RVInterface{
         setContentView(binding.getRoot());
 
         initRecyclerView();
+
+        Button newRun = findViewById(R.id.bottom_nav);
+        newRun.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, MainActivity3.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void initRecyclerView(){
