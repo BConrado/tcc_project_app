@@ -34,6 +34,7 @@ public class SecondFragment extends Fragment {
             public void onClick(View view) {
                 NavHostFragment.findNavController(SecondFragment.this)
                         .navigate(R.id.action_SecondFragment_to_FirstFragment);
+                ((MainActivity3)getActivity()).stopTimer();
             }
         });
     }

@@ -15,8 +15,7 @@ import java.util.List;
 
 public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
     private final RVInterface recyclerViewI;
-    private List<String> list = List.of("Run 14/09/22 16:56", "Run 15/09/22 9:54", "Run 14/09/22 16:56", "Run 15/09/22 9:54" , "Run 14/09/22 16:56", "Run 15/09/22 9:54",
-            "Run 14/09/22 16:56", "Run 15/09/22 9:54", "Run 14/09/22 16:56", "Run 15/09/22 9:54", "Run 14/09/22 16:56", "Run 15/09/22 9:54");
+    private List<String> list = List.of("Run 14/09/22 16:56", "Run 15/09/22 9:54");
 
     public Adapter(RVInterface recyclerViewI){
         this.recyclerViewI = recyclerViewI;
