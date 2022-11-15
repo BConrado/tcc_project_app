@@ -251,7 +251,7 @@ public class MainActivity3 extends AppCompatActivity implements LocationListener
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "My Notification");
 
         Intent ii = new Intent(this.getApplicationContext(), MainActivity3.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, ii, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, ii, PendingIntent.FLAG_IMMUTABLE);
 
         builder.setContentTitle("ALERT");
         builder.setContentIntent(pendingIntent);
@@ -283,7 +283,7 @@ public class MainActivity3 extends AppCompatActivity implements LocationListener
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "My Notification");
 
         Intent ii = new Intent(this.getApplicationContext(), MainActivity3.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, ii, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, ii, PendingIntent.FLAG_IMMUTABLE);
 
         builder.setContentTitle("ALERT");
         builder.setContentIntent(pendingIntent);
