@@ -12,13 +12,16 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
     private final RVInterface recyclerViewI;
-    private List<String> list = List.of("Run 14/09/22 16:56", "Run 15/09/22 9:54");
+    Map<Integer,List<List<String>>> mapcorridas;
 
-    public Adapter(RVInterface recyclerViewI){
+    public Adapter(RVInterface recyclerViewI, Map<Integer,List<List<String>>> mapcorridas){
         this.recyclerViewI = recyclerViewI;
+        this.mapcorridas = mapcorridas;
+
     }
 
     @NonNull
@@ -31,14 +34,14 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull @NotNull MyViewHolder holder, int position) {
-        String name = list.get(position);
+        String name = "Corrida " + position;
 
         holder.textName.setText(name);
     }
 
     @Override
     public int getItemCount() {
-        return list.size();
+        return mapcorridas.size();
     }
 
     class MyViewHolder extends RecyclerView.ViewHolder{

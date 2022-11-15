@@ -49,12 +49,13 @@ import android.widget.Toast;
 
 import com.tcc.tcc_project.databinding.ActivityMain3Binding;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainActivity3 extends AppCompatActivity implements SensorEventListener, LocationListener {
+public class MainActivity3 extends AppCompatActivity implements LocationListener, SensorEventListener {
 
     private AppBarConfiguration appBarConfiguration;
     private ActivityMain3Binding binding;
@@ -71,17 +72,19 @@ public class MainActivity3 extends AppCompatActivity implements SensorEventListe
     int Delay = 1000;
 
     boolean NOTIFICACOES = true;
-
+    File file;
+    Timer timer;
 
 
 
     LocationManager locationManager;
     private static final int GPS_TIME_INTERVAL = 1000;
-    private static final int GPS_DISTANCE = 0;
+    private static final int GPS_DISTANCE = 1000;
 
-    final static String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
-    final static int PERMISSION_ALL = 1;
 
+    FileUtil fileUtil;
+    float x,y,z = 0;
+    int id;
     Location l = new Location("");
 
     DataShared dataShared;
@@ -89,6 +92,13 @@ public class MainActivity3 extends AppCompatActivity implements SensorEventListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
+        file = new File(getFilesDir()+ "/data.csv");
+
+        Intent intent = getIntent();
+        id = intent.getIntExtra("id", 0);
 
 
         StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder(StrictMode.getVmPolicy())
@@ -104,9 +114,7 @@ public class MainActivity3 extends AppCompatActivity implements SensorEventListe
         appBarConfiguration = new AppBarConfiguration.Builder(navController.getGraph()).build();
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
 
-        if (Build.VERSION.SDK_INT >= 23) {
-            requestPermissions(PERMISSIONS, PERMISSION_ALL);
-        }
+
 
         /*binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,10 +143,7 @@ public class MainActivity3 extends AppCompatActivity implements SensorEventListe
             }
         });
 
-
     }
-
-
 
 
     @Override
@@ -167,37 +172,26 @@ public class MainActivity3 extends AppCompatActivity implements SensorEventListe
 
     public void startGetLocation(int delay, int velocidadeMaxima, boolean notificacoes) {
 
-
-        timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        requestLocation();
-
-                    }
-                });
-            }
-        };
-        timer = new Timer();
-        timer.scheduleAtFixedRate(timerTask, 0, Delay*delay);
-
-/*
+        Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
                 requestLocation();
-                // escreveArquivo();
-                handler.postDelayed(this, 1000);
+                escreveArquivo();
+                handler.postDelayed(this, 1000 * delay);
             }
-        }, 0)*/
+        }, 0);
     }
+
+    private void escreveArquivo() {
+        String texto = id + ";" + l.getLatitude() + ";" + l.getLongitude()+ ";" + l.getSpeed() + ";" + System.currentTimeMillis()/1000 + ";" + x + ";" + y + ";" + z + "\n";
+        fileUtil.appendStringToFile(texto, file);
+//        System.out.println(texto);
+    }
+
 
     @Override
     public void onLocationChanged(@NonNull Location location) {
         l = location;
-        System.out.println(l.getLatitude());
-        Toast.makeText(this, ""+l.getLongitude(), Toast.LENGTH_SHORT).show();
         locationManager.removeUpdates(this);
     }
 
@@ -208,7 +202,8 @@ public class MainActivity3 extends AppCompatActivity implements SensorEventListe
         if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
                     ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, GPS_TIME_INTERVAL, GPS_DISTANCE, this);
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                        GPS_TIME_INTERVAL, GPS_DISTANCE, this);
             }
         }
     }
@@ -234,16 +229,11 @@ public class MainActivity3 extends AppCompatActivity implements SensorEventListe
             //System.out.println("ARRAY = "+linear_acceleration[0] + " " + linear_acceleration[1] + " " + linear_acceleration[2]);
 
             double acceleration = magnitude(linear_acceleration);
+
             dataShared.sendString(acceleration+"");
 
-
-
-
-
             // handler.removeCallbacks(runnable);
-
-
-
+            System.out.println("Aceleracao raiz = "+ acceleration);
             if(acceleration > 9.9 && NOTIFICACOES) notify(acceleration+"");
 
 
@@ -257,17 +247,6 @@ public class MainActivity3 extends AppCompatActivity implements SensorEventListe
     double magnitude(float[] v) {
         return Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
     }
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int i) {
-
-    }
-
-
-
-
-
-
 
     private void notify (String msg) {
 
@@ -300,4 +279,49 @@ public class MainActivity3 extends AppCompatActivity implements SensorEventListe
         managerCompt.notify(notificationID, builder.build());
         notificationID++;
     }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
+
+    @Override
+    public void onSensorChanged(final SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
+            // alpha is calculated as t / (t + dT)
+            // with t, the low-pass filter's time-constant
+            // and dT, the event delivery rate
+            float gravity[] = new float[3];
+            float linear_acceleration[]= new float[3];
+            final float alpha = 0.8f;
+
+
+
+
+            gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
+            gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
+            gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
+
+            linear_acceleration[0] = event.values[0] - gravity[0];
+            linear_acceleration[1] = event.values[1] - gravity[1];
+            linear_acceleration[2] = event.values[2] - gravity[2];
+
+            x = linear_acceleration[0];
+            y = linear_acceleration[1] ;
+            z = linear_acceleration[2];
+
+            //System.out.println("ARRAY = "+linear_acceleration[0] + " " + linear_acceleration[1] + " " + linear_acceleration[2]);
+
+            double acceleration = magnitude(linear_acceleration);
+
+            dataShared.sendString(acceleration+"");
+
+
+            System.out.println("Aceleracao raiz = "+ acceleration);
+            if(acceleration > 9.9) notify(acceleration+"");
+
+        }
+    }
+
+
 }
