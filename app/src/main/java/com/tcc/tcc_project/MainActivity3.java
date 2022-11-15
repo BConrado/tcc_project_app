@@ -73,6 +73,8 @@ public class MainActivity3 extends AppCompatActivity implements LocationListener
     int userDelay = 5;
 
     boolean NOTIFICACOES = true;
+    int VELMAX = 0;
+
     File file;
 
     Handler handlerLocation = new Handler();
@@ -176,19 +178,36 @@ public class MainActivity3 extends AppCompatActivity implements LocationListener
 
     public void startAnalises(int delay, int velocidadeMaxima, boolean notificacoes){
         userDelay = delay;
-        startGetLocation(velocidadeMaxima, notificacoes);
+        NOTIFICACOES = notificacoes;
+        VELMAX = velocidadeMaxima;
+        startGetLocation();
         sensorManager.registerListener(this, gravitySensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
-    public void startGetLocation(int velocidadeMaxima, boolean notificacoes) {
+    public void startGetLocation() {
         handlerLocation.postDelayed(myRunnable, 0);
     }
 
     private void escreveArquivo() {
         float [] array = new float []{x, y, z};
+        double a = magnitude(array);
 
-        dataShared.sendString(magnitude(array)+"");
+        dataShared.sendString(a+"");
         dataShared.sendVelocity(l.getSpeed()+"");
+
+        float vel = (float) (l.getSpeed() * 3.6);
+
+        if(vel > VELMAX){
+            notifySpeed(vel+" LIMITE DE VELOCIDADE EXCEDIDO");
+        }
+
+
+        System.out.println(NOTIFICACOES);
+        if(a > 9.9 && NOTIFICACOES){
+            notify(a+" - CUIDADO FORCA MAIOR QUE 1G");
+            System.out.println(a);
+        }
+
         String texto = id + ";" + l.getLatitude() + ";" + l.getLongitude()+ ";" + l.getSpeed() + ";" + System.currentTimeMillis()/1000 + ";" + x + ";" + y + ";" + z + "\n";
         fileUtil.appendStringToFile(texto, file);
 //        System.out.println(texto);
@@ -252,6 +271,38 @@ public class MainActivity3 extends AppCompatActivity implements LocationListener
         notificationID++;
     }
 
+    private void notifySpeed (String msg) {
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel channel = new NotificationChannel("My Notification", "My Notification", NotificationManager.IMPORTANCE_DEFAULT);
+            channel.enableVibration(true);
+
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, "My Notification");
+
+        Intent ii = new Intent(this.getApplicationContext(), MainActivity3.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, ii, 0);
+
+        builder.setContentTitle("ALERT");
+        builder.setContentIntent(pendingIntent);
+        builder.setContentText(msg+ " km/h PASSOU DO LIMITE DE VELOCIDADE");
+        builder.setSmallIcon(R.drawable.ic_launcher_background);
+        builder.setPriority(NotificationCompat.PRIORITY_HIGH);
+
+        builder.setVibrate(new long[] { 1000, 1000, 1000, 1000, 1000 });
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        builder.setSound(alarmSound);
+        builder.setAutoCancel(true);
+
+        NotificationManagerCompat managerCompt = NotificationManagerCompat.from(this);
+
+        managerCompt.notify(notificationID, builder.build());
+        notificationID++;
+    }
+
     @Override
     public void onAccuracyChanged(Sensor sensor, int i) {
 
@@ -284,20 +335,16 @@ public class MainActivity3 extends AppCompatActivity implements LocationListener
 
             //System.out.println("ARRAY = "+linear_acceleration[0] + " " + linear_acceleration[1] + " " + linear_acceleration[2]);
 
-            double acceleration = magnitude(linear_acceleration);
 
 
 
-            System.out.println("Aceleracao raiz = "+ acceleration);
-            if(acceleration > 9.9 && NOTIFICACOES) notify(acceleration+"");
+
+            //System.out.println("Aceleracao raiz = "+ acceleration);
 
         }
     }
 
     double magnitude(float[] v) {
-
-
-
         return Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
     }
 

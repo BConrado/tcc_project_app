@@ -91,12 +91,14 @@ public class FirstFragment extends Fragment {
             }
         });
 
-        Switch switchNotific = getView().findViewById(R.id.switch1);
-        boolean isNotificationsOn = switchNotific.isChecked();
+
 
         binding.buttonFirst.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Switch switchNotific = getView().findViewById(R.id.switch1);
+
+                boolean isNotificationsOn = switchNotific.isChecked();
                 NavHostFragment.findNavController(FirstFragment.this)
                         .navigate(R.id.action_FirstFragment_to_SecondFragment);
                 ((MainActivity3)getActivity()).startAnalises(seekBar.getProgress(), seekBarVelocity.getProgress(), isNotificationsOn);
