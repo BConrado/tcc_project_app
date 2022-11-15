@@ -70,7 +70,7 @@ public class MainActivity3 extends AppCompatActivity implements LocationListener
     TimerTask timerTask;
     TimerTask SHARE;
     int Delay = 1000;
-    int userDelay = 5;
+    int userDelay = 1;
 
     boolean NOTIFICACOES = true;
     int VELMAX = 0;
@@ -84,7 +84,6 @@ public class MainActivity3 extends AppCompatActivity implements LocationListener
             requestLocation();
             escreveArquivo();
             handlerLocation.postDelayed(this, 1000 * userDelay);
-            System.out.println("TO PRINTANDO");
         }
     };
 

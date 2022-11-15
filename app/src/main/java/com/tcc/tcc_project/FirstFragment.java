@@ -43,8 +43,8 @@ public class FirstFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         SeekBar seekBar =  getView().findViewById(R.id.seekBar);
-        seekBar.setMax(20); // 20 maximum value for the Seek bar
-        seekBar.setMin(5);
+        seekBar.setMax(5); // 20 maximum value for the Seek bar
+        seekBar.setMin(1);
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int progressChangedValue = 0;
