@@ -70,12 +70,21 @@ public class MainActivity3 extends AppCompatActivity implements LocationListener
     TimerTask timerTask;
     TimerTask SHARE;
     int Delay = 1000;
+    int userDelay = 5;
 
     boolean NOTIFICACOES = true;
     File file;
-    Timer timer;
 
+    Handler handlerLocation = new Handler();
 
+    Runnable myRunnable = new Runnable() {
+        public void run() {
+            requestLocation();
+            escreveArquivo();
+            handlerLocation.postDelayed(this, 1000 * userDelay);
+            System.out.println("TO PRINTANDO");
+        }
+    };
 
     LocationManager locationManager;
     private static final int GPS_TIME_INTERVAL = 1000;
@@ -132,6 +141,7 @@ public class MainActivity3 extends AppCompatActivity implements LocationListener
         dataShared = new ViewModelProvider(this).get(DataShared.class);
         dataShared.init();
         dataShared.sendString("0");
+        dataShared.sendVelocity("0");
 
 
 
@@ -160,29 +170,25 @@ public class MainActivity3 extends AppCompatActivity implements LocationListener
 
     public void stopTimer(){
         sensorManager.unregisterListener(this);
+        handlerLocation.removeCallbacks(myRunnable);
 
-        timer.cancel();
-        timer.purge();
     }
 
     public void startAnalises(int delay, int velocidadeMaxima, boolean notificacoes){
-        startGetLocation(delay, velocidadeMaxima, notificacoes);
+        userDelay = delay;
+        startGetLocation(velocidadeMaxima, notificacoes);
         sensorManager.registerListener(this, gravitySensor, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
-    public void startGetLocation(int delay, int velocidadeMaxima, boolean notificacoes) {
-
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                requestLocation();
-                escreveArquivo();
-                handler.postDelayed(this, 1000 * delay);
-            }
-        }, 0);
+    public void startGetLocation(int velocidadeMaxima, boolean notificacoes) {
+        handlerLocation.postDelayed(myRunnable, 0);
     }
 
     private void escreveArquivo() {
+        float [] array = new float []{x, y, z};
+
+        dataShared.sendString(magnitude(array)+"");
+        dataShared.sendVelocity(l.getSpeed()+"");
         String texto = id + ";" + l.getLatitude() + ";" + l.getLongitude()+ ";" + l.getSpeed() + ";" + System.currentTimeMillis()/1000 + ";" + x + ";" + y + ";" + z + "\n";
         fileUtil.appendStringToFile(texto, file);
 //        System.out.println(texto);
@@ -208,45 +214,11 @@ public class MainActivity3 extends AppCompatActivity implements LocationListener
         }
     }
 
-    @Override
-    public void onSensorChanged(final SensorEvent event) {
-        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER){
-            // alpha is calculated as t / (t + dT)
-            // with t, the low-pass filter's time-constant
-            // and dT, the event delivery rate
-            float gravity[] = new float[3];
-            float linear_acceleration[]= new float[3];
-            final float alpha = 0.8f;
-
-            gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
-            gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
-            gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
-
-            linear_acceleration[0] = event.values[0] - gravity[0];
-            linear_acceleration[1] = event.values[1] - gravity[1];
-            linear_acceleration[2] = event.values[2] - gravity[2];
-
-            //System.out.println("ARRAY = "+linear_acceleration[0] + " " + linear_acceleration[1] + " " + linear_acceleration[2]);
-
-            double acceleration = magnitude(linear_acceleration);
-
-            dataShared.sendString(acceleration+"");
-
-            // handler.removeCallbacks(runnable);
-            System.out.println("Aceleracao raiz = "+ acceleration);
-            if(acceleration > 9.9 && NOTIFICACOES) notify(acceleration+"");
-
-
-        }
-    }
-
     public void onStatusChanged(String provider, int status, Bundle extras) {}
     public void onProviderEnabled(String provider) {}
     public void onProviderDisabled(String provider) {}
 
-    double magnitude(float[] v) {
-        return Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
-    }
+
 
     private void notify (String msg) {
 
@@ -314,13 +286,19 @@ public class MainActivity3 extends AppCompatActivity implements LocationListener
 
             double acceleration = magnitude(linear_acceleration);
 
-            dataShared.sendString(acceleration+"");
 
 
             System.out.println("Aceleracao raiz = "+ acceleration);
-            if(acceleration > 9.9) notify(acceleration+"");
+            if(acceleration > 9.9 && NOTIFICACOES) notify(acceleration+"");
 
         }
+    }
+
+    double magnitude(float[] v) {
+
+
+
+        return Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
     }
 
 

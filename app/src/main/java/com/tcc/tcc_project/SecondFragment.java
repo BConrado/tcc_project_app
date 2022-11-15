@@ -34,6 +34,7 @@ public class SecondFragment extends Fragment {
     LineChart chart;
     LineChart chart1;
     int x = 0;
+    int x1 =0;
 
     List grafico1;
     List grafico2;
@@ -74,15 +75,15 @@ public class SecondFragment extends Fragment {
         dataShared = new ViewModelProvider(getActivity()).get(DataShared.class);
 
         LiveData<String> s = dataShared.getMsn();
+        LiveData<String> vel = dataShared.getVel();
 
         s.observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
-
                 grafico2.add(new Entry(x, Float.parseFloat(s)));
                 x++;
 
-                LineDataSet barDataSet = new LineDataSet(grafico2, "GRAVIDADE");
+                LineDataSet barDataSet = new LineDataSet(grafico2, "Force");
                 LineData barData = new LineData(barDataSet);
 
                 chart1.setData(barData);
@@ -91,6 +92,25 @@ public class SecondFragment extends Fragment {
 
                 if(grafico2.size()>300){
                     grafico2.clear();
+                }
+            }
+        });
+
+        vel.observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(String s) {
+                grafico1.add(new Entry(x1, Float.parseFloat(s)));
+                x1++;
+
+                LineDataSet barDataSet1 = new LineDataSet(grafico1, "Velocity Linear Chart");
+                LineData barData1 = new LineData(barDataSet1);
+
+                chart.setData(barData1);
+                chart.notifyDataSetChanged();
+                chart.invalidate();
+
+                if(grafico1.size()>300){
+                    grafico1.clear();
                 }
             }
         });
@@ -103,7 +123,9 @@ public class SecondFragment extends Fragment {
         grafico1 = new ArrayList();
         grafico2 = new ArrayList();
 
-        grafico1.add(new Entry(0,0));
+
+        // velocidade
+        grafico1.add(new Entry(x1,0));
 
 
         LineDataSet barDataSet = new LineDataSet(grafico1, "Velocity Linear Chart");
