@@ -1,5 +1,6 @@
 package com.tcc.tcc_project;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -63,9 +64,11 @@ public class SecondFragment extends Fragment {
         binding.buttonSecond.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NavHostFragment.findNavController(SecondFragment.this)
-                        .navigate(R.id.action_SecondFragment_to_FirstFragment);
-                        ((MainActivity3)getActivity()).stopTimer();
+                //NavHostFragment.findNavController(SecondFragment.this).navigate(R.id.action_SecondFragment_to_FirstFragment);
+                ((MainActivity3)getActivity()).stopTimer();
+                Intent i = new Intent(getActivity(), MainActivity.class);
+                startActivity(i);
+
             }
         });
         chart = getView().findViewById(R.id.InfoChat1);
