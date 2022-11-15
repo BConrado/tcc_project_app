@@ -24,6 +24,8 @@ import com.tcc.tcc_project.databinding.FragmentSecondBinding;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class SecondFragment extends Fragment {
 
@@ -63,6 +65,7 @@ public class SecondFragment extends Fragment {
                 NavHostFragment.findNavController(SecondFragment.this)
                         .navigate(R.id.action_SecondFragment_to_FirstFragment);
 
+
             }
         });
         chart = getView().findViewById(R.id.InfoChat1);
@@ -72,21 +75,26 @@ public class SecondFragment extends Fragment {
         dataShared = new ViewModelProvider(getActivity()).get(DataShared.class);
 
         LiveData<String> s = dataShared.getMsn();
+
         s.observe(this, new Observer<String>() {
             @Override
             public void onChanged(String s) {
 
-
                 grafico2.add(new Entry(x, Float.parseFloat(s)));
                 x++;
 
-                LineDataSet barDataSet = new LineDataSet(grafico1, "GRAVIDADE");
+                LineDataSet barDataSet = new LineDataSet(grafico2, "GRAVIDADE");
                 LineData barData = new LineData(barDataSet);
+
                 chart1.setData(barData);
-                chart1.refreshDrawableState();
+                chart1.notifyDataSetChanged();
+                chart1.invalidate();
+
+                if(grafico2.size()>300){
+                    grafico2.clear();
+                }
             }
         });
-
     }
 
 
@@ -96,7 +104,7 @@ public class SecondFragment extends Fragment {
         grafico1 = new ArrayList();
         grafico2 = new ArrayList();
 
-        grafico1.add(new Entry(x,0));
+        grafico1.add(new Entry(0,0));
 
 
         LineDataSet barDataSet = new LineDataSet(grafico1, "Velocity Linear Chart");
@@ -109,8 +117,8 @@ public class SecondFragment extends Fragment {
 
 
 
-        grafico2.add(new Entry(x,0));
-        x++;
+        grafico2.add(new Entry(0,0));
+
         LineDataSet barDataSet1 = new LineDataSet(grafico2, "Force");
         LineData barData1 = new LineData(barDataSet1);
         chart1.setData(barData1);

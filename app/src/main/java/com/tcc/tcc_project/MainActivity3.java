@@ -65,8 +65,12 @@ public class MainActivity3 extends AppCompatActivity implements SensorEventListe
     Handler handler = new Handler();
 
     Timer timer;
+    Timer shareTimer;
     TimerTask timerTask;
+    TimerTask SHARE;
     int Delay = 1000;
+
+    boolean NOTIFICACOES = true;
 
 
 
@@ -119,7 +123,7 @@ public class MainActivity3 extends AppCompatActivity implements SensorEventListe
 
         dataShared = new ViewModelProvider(this).get(DataShared.class);
         dataShared.init();
-        dataShared.sendString("5");
+        dataShared.sendString("0");
 
 
 
@@ -151,6 +155,7 @@ public class MainActivity3 extends AppCompatActivity implements SensorEventListe
 
     public void stopTimer(){
         sensorManager.unregisterListener(this);
+
         timer.cancel();
         timer.purge();
     }
@@ -229,12 +234,17 @@ public class MainActivity3 extends AppCompatActivity implements SensorEventListe
             //System.out.println("ARRAY = "+linear_acceleration[0] + " " + linear_acceleration[1] + " " + linear_acceleration[2]);
 
             double acceleration = magnitude(linear_acceleration);
-
             dataShared.sendString(acceleration+"");
 
 
-            System.out.println("Aceleracao raiz = "+ acceleration);
-            if(acceleration > 9.9) notify(acceleration+"");
+
+
+
+            // handler.removeCallbacks(runnable);
+
+
+
+            if(acceleration > 9.9 && NOTIFICACOES) notify(acceleration+"");
 
 
         }
