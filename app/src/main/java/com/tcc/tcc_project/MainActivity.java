@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.view.View;
 
+import androidx.core.util.RunnableKt;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -119,11 +120,35 @@ public class MainActivity extends AppCompatActivity implements RVInterface{
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, MainActivity3.class);
                 intent.putExtra("id", id);
+
+                RunModel runModel = readRunFromFile(id+"");
+
+                intent.putExtra("myRun", runModel);
+
+
                 startActivity(intent);
             }
         });
 
 
+    }
+
+    private RunModel readRunFromFile(String id){
+        RunModel rn = new RunModel();
+
+        // read from file
+        List<List<String>> corrida = mapcorridas.get(id);
+
+        // Latitude Inicial e Final
+        // Longitude Inicial e Final
+        // Array de Velocidades
+        // Array com x, array com y e array com z
+
+
+
+
+
+        return rn;
     }
 
     private void initRecyclerView(){

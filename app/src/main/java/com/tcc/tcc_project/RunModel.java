@@ -1,105 +1,115 @@
 package com.tcc.tcc_project;
 
-import java.sql.Timestamp;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
-public class RunModel {
-    public RunModel(double latitude, double longitude, long initialTime,
-                    long finalTime, double latitudeF, double longitudeF, ArrayList<Integer> velocidades) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.initialTime = initialTime;
-        this.finalTime = finalTime;
-        this.latitudeF = latitudeF;
-        this.longitudeF = longitudeF;
+public class RunModel implements Serializable {
+
+    private String LatitudeInicial;
+    private String LatitudeFinal;
+
+    private String LongitudeInicial;
+    private String LongitudeFinal;
+
+    private List<String> velocidades;
+    private List<String> x;
+    private List<String> y;
+    private List<String> z;
+
+    public RunModel(){}
+
+    public RunModel(String latitudeInicial, String latitudeFinal, String longitudeInicial, String longitudeFinal, List<String> velocidades, List<String> x, List<String> y, List<String> z) {
+        LatitudeInicial = latitudeInicial;
+        LatitudeFinal = latitudeFinal;
+        LongitudeInicial = longitudeInicial;
+        LongitudeFinal = longitudeFinal;
         this.velocidades = velocidades;
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
-    private double latitude;
-    private double longitude;
-    private double latitudeF;
-    private double longitudeF;
-    private long initialTime;
-    private long finalTime;
+    public String getLatitudeInicial() {
+        return LatitudeInicial;
+    }
 
-    public ArrayList<Integer> getVelocidades() {
+    public void setLatitudeInicial(String latitudeInicial) {
+        LatitudeInicial = latitudeInicial;
+    }
+
+    public String getLatitudeFinal() {
+        return LatitudeFinal;
+    }
+
+    public void setLatitudeFinal(String latitudeFinal) {
+        LatitudeFinal = latitudeFinal;
+    }
+
+    public String getLongitudeInicial() {
+        return LongitudeInicial;
+    }
+
+    public void setLongitudeInicial(String longitudeInicial) {
+        LongitudeInicial = longitudeInicial;
+    }
+
+    public List<String> getVelocidades() {
         return velocidades;
     }
 
-    public void setVelocidades(ArrayList<Integer> velocidades) {
+    public void setVelocidades(List<String> velocidades) {
         this.velocidades = velocidades;
     }
 
-    private ArrayList<Integer> velocidades;
-
-    public double getLatitudeF() {
-        return latitudeF;
+    public String getLongitudeFinal() {
+        return LongitudeFinal;
     }
 
-    public void setLatitudeF(double latitudeF) {
-        this.latitudeF = latitudeF;
+    public void setLongitudeFinal(String longitudeFinal) {
+        LongitudeFinal = longitudeFinal;
     }
 
-    public double getLongitudeF() {
-        return longitudeF;
+    public List<String> getX() {
+        return x;
     }
 
-    public void setLongitudeF(double longitudeF) {
-        this.longitudeF = longitudeF;
+    public void setX(List<String> x) {
+        this.x = x;
     }
 
-
-
-    public double getLatitude() {
-        return latitude;
+    public List<String> getY() {
+        return y;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public void setY(List<String> y) {
+        this.y = y;
     }
 
-    public double getLongitude() {
-        return longitude;
+    public List<String> getZ() {
+        return z;
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setZ(List<String> z) {
+        this.z = z;
     }
 
-    public long getInitialTime() {
-        return initialTime;
+    public ArrayList<Double> magnitudes() {
+        ArrayList<Double> lst = new ArrayList<>();
+        for(int i =0; i<x.size();i++){
+            float l = Float.parseFloat(x.get(i));
+            float k = Float.parseFloat(y.get(i));
+            float j = Float.parseFloat(z.get(i));
+
+            float [] array = new float []{l, k, j};
+            double a = magnitude(array);
+            lst.add(a);
+        }
+        return lst;
     }
 
-    public void setInitialTime(long initialTime) {
-        this.initialTime = initialTime;
-    }
-
-    public long getFinalTime() {
-        return finalTime;
-    }
-
-    public void setFinalTime(long finalTime) {
-        this.finalTime = finalTime;
-    }
-
-    public String calculateAvarageSpeed(){
-        double velocidadeMedia;
-        double time = this.finalTime - this.initialTime;
-        double latitudeAbs = this.latitude - this.latitudeF;
-        double longitudeAbs = this.longitude - this.longitudeF;
-        latitudeAbs *= 111.1;
-        longitudeAbs *= 96.2;
-        double latAbsSq = latitudeAbs * latitudeAbs;
-        double longAbsSq = longitudeAbs * longitudeAbs;
-        double distanciaKM = Math.sqrt(latAbsSq+longAbsSq);
-
-        long tempoMedio = this.finalTime - this.initialTime;
-
-        Timestamp ts = new Timestamp(tempoMedio);
-
-        velocidadeMedia =distanciaKM / ts.getHours();
-
-        return ""+velocidadeMedia+ " KM/H";
+    double magnitude(float[] v) {
+        return Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
     }
 
 }
