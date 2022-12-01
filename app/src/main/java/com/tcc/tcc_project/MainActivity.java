@@ -175,13 +175,20 @@ public class MainActivity extends AppCompatActivity implements RVInterface{
             magnitudes.add(rn.magnitude(xyz));
         }
 
-        String velMed;
+        Double velMed = 0.0;
+
+        for (int i =0; i < corrida.size(); i++) {
+            velMed = velMed + Double.parseDouble(corrida.get(i).get(3));
+        }
+
+        velMed = velMed/corrida.size();
+
 
         String tempoI = corrida.get(0).get(4);
         String tempoF = corrida.get(corrida.size()-1).get(4);
 
-        Timestamp a = new Timestamp(Long.parseLong(tempoI));
-        Timestamp b = new Timestamp(Long.parseLong(tempoF));
+        Timestamp a = new Timestamp(Long.parseLong(tempoI)); // INICIAL
+        Timestamp b = new Timestamp(Long.parseLong(tempoF)); // FINAL
 
         int aSec = a.getSeconds();
         int aMin = a.getMinutes()*60;
@@ -194,10 +201,13 @@ public class MainActivity extends AppCompatActivity implements RVInterface{
         int aTotalSec = aSec+aMin+aHor;
         int bTotalSec = bSec+bMin+bHor;
 
-        String mediaVel;
+        int timeDelta = bTotalSec - aTotalSec;
+
+        double velMedFinal = velMed/timeDelta;
 
 
-        //rn.setVelocidadeMedia((velMed*3.6)+"");
+
+        rn.setVelocidadeMedia((velMedFinal*3.6)+"");
 
         rn.setMagnitudes(magnitudes);
 

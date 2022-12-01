@@ -19,7 +19,8 @@ import java.util.List;
 
 public class MainActivity2 extends AppCompatActivity {
 
-    List listChart;
+    List vels;
+    List forcas;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,7 +28,8 @@ public class MainActivity2 extends AppCompatActivity {
 
 //        TextView lati = findViewById(R.id.LAT);
 //        TextView longi = findViewById(R.id.LON);
-//        TextView velM = findViewById(R.id.VelMed);
+        TextView velM = findViewById(R.id.VelMed);
+        TextView distanciaTotal = findViewById(R.id.distanciaTotal);
         int id = getIntent().getIntExtra("POS", 0);
         RunModel runModel = (RunModel)getIntent().getSerializableExtra("myRun");
 
@@ -39,25 +41,51 @@ public class MainActivity2 extends AppCompatActivity {
 
 //        lati.setText(rm.getLatitude()+"");
 //        longi.setText(rm.getLongitude()+"");
-//        velM.setText(rm.calculateAvarageSpeed());
+        velM.setText(runModel.getVelocidadeMedia());
+        distanciaTotal.setText(runModel.getDistancia());
 
-//        LineChart chart = findViewById(R.id.linearChart);
-//        getDataChart(rm.getVelocidades());
-//        LineDataSet barDataSet = new LineDataSet(listChart, "Velocity Linear Chart");
-//        LineData barData = new LineData(barDataSet);
-//        chart.setData(barData);
-//        barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-//        barDataSet.setValueTextColor(Color.BLACK);
-//        barDataSet.setValueTextSize(16f);
-//        chart.getDescription().setEnabled(true);
+        LineChart velocidadesChart = findViewById(R.id.vel);
+        LineChart forcasChart = findViewById(R.id.forcaRes);
+
+        getDataChart(runModel.getVelocidades());
+        getDataChartForca(runModel.getMagnitudes());
+
+
+        LineDataSet barDataSetVel = new LineDataSet(vels, "Velocity Linear Chart");
+        LineDataSet barDataSetGrav = new LineDataSet(forcas, "Gravity Linear Chart");
+
+        LineData barDataVel = new LineData(barDataSetVel);
+        LineData barDataGrav = new LineData(barDataSetGrav);
+
+        velocidadesChart.setData(barDataVel);
+        forcasChart.setData(barDataGrav);
+
+        barDataSetVel.setColors(ColorTemplate.COLORFUL_COLORS);
+        barDataSetVel.setValueTextColor(Color.BLACK);
+        barDataSetVel.setValueTextSize(16f);
+        velocidadesChart.getDescription().setEnabled(true);
+
+        barDataSetGrav.setColors(ColorTemplate.COLORFUL_COLORS);
+        barDataSetGrav.setValueTextColor(Color.BLACK);
+        barDataSetGrav.setValueTextSize(16f);
+        forcasChart.getDescription().setEnabled(true);
+
+
     }
 
 
 
-    private void getDataChart(ArrayList data){
-        listChart = new ArrayList();
+    private void getDataChart(List data){
+        vels = new ArrayList();
         for (int i = 0; i<data.size(); i++){
-            listChart.add(new Entry(i, Integer.parseInt(data.get(i).toString())));
+            vels.add(new Entry(i, Float.parseFloat(data.get(i).toString())));
+        }
+    }
+
+    private void getDataChartForca(List data){
+        forcas = new ArrayList();
+        for (int i =0; i<data.size(); i++){
+            forcas.add(new Entry(i, Float.parseFloat(data.get(i).toString())));
         }
     }
 
