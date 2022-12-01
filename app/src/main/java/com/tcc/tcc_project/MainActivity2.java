@@ -29,12 +29,9 @@ public class MainActivity2 extends AppCompatActivity {
 //        TextView lati = findViewById(R.id.LAT);
 //        TextView longi = findViewById(R.id.LON);
         TextView velM = findViewById(R.id.VelMed);
-        TextView distanciaTotal = findViewById(R.id.distanciaTotal);
+        TextView distanciaTotal = findViewById(R.id.LAT);
         int id = getIntent().getIntExtra("POS", 0);
         RunModel runModel = (RunModel)getIntent().getSerializableExtra("myRun");
-
-
-
 
 
         //RunModel rm = bancoDeDados(id);

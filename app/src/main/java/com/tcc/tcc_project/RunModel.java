@@ -18,7 +18,7 @@ public class RunModel implements Serializable {
     private List<String> z;
 
     public String getVelocidadeMedia() {
-        return velocidadeMedia;
+        return velocidadeMedia+ " km/h";
     }
 
     public void setVelocidadeMedia(String velocidadeMedia) {
@@ -159,7 +159,7 @@ public class RunModel implements Serializable {
 
         double distanciaEmMetros = R * c;
 
-        return distanciaEmMetros+"";
+        return (distanciaEmMetros*1000)+" metros";
     }
 
 

@@ -122,10 +122,6 @@ public class MainActivity extends AppCompatActivity implements RVInterface{
                 Intent intent = new Intent(MainActivity.this, MainActivity3.class);
                 intent.putExtra("id", id);
 
-                RunModel runModel = readRunFromFile(id+"");
-
-                intent.putExtra("myRun", runModel);
-
 
                 startActivity(intent);
             }
@@ -136,9 +132,10 @@ public class MainActivity extends AppCompatActivity implements RVInterface{
 
     private RunModel readRunFromFile(String id){
         RunModel rn = new RunModel();
+        int aux = 0;
 
         // read from file
-        List<List<String>> corrida = mapcorridas.get(id);
+        List<List<String>> corrida = mapcorridas.get(Integer.parseInt(id));
 
 
         // Latitude Inicial e Final
@@ -148,8 +145,15 @@ public class MainActivity extends AppCompatActivity implements RVInterface{
 
         // "id;latitude;longitude;speed;timestamp;x;y;z\n"
         //  0    1         2         3     4      5,6,7
-        String latI = corrida.get(0).get(1);
-        String lngI = corrida.get(0).get(2);
+
+        while(corrida.get(aux).get(1).equals("0.0")){
+            if(aux==corrida.size()){
+                break;
+            }
+            aux++;
+        }
+        String latI = corrida.get(aux).get(1);
+        String lngI = corrida.get(aux).get(2);
         String latF = corrida.get(corrida.size()-1).get(1);
         String lngF = corrida.get(corrida.size()-1).get(2);
 
@@ -187,24 +191,33 @@ public class MainActivity extends AppCompatActivity implements RVInterface{
         String tempoI = corrida.get(0).get(4);
         String tempoF = corrida.get(corrida.size()-1).get(4);
 
-        Timestamp a = new Timestamp(Long.parseLong(tempoI)); // INICIAL
-        Timestamp b = new Timestamp(Long.parseLong(tempoF)); // FINAL
+//        System.out.println("SIZE ----------->"+tempoI +" "+ tempoF);
+//
+//        Timestamp a = new Timestamp(Long.parseLong(tempoI)); // INICIAL
+//        Timestamp b = new Timestamp(Long.parseLong(tempoF)); // FINAL
+//
+//
+//        System.out.println((a-b) + "");
+//
+//
+//        int aSec = a.getSeconds();
+//
+//        int aMin = a.getMinutes()*60;
+//        int aHor = a.getHours()*60*60;
+//
+//        int bSec = b.getSeconds();
+//        int bMin = b.getMinutes()*60;
+//        int bHor = b.getHours()*60*60;
+//
+//        int aTotalSec = aSec+aMin+aHor;
+//        int bTotalSec = bSec+bMin+bHor;
 
-        int aSec = a.getSeconds();
-        int aMin = a.getMinutes()*60;
-        int aHor = a.getHours()*60*60;
 
-        int bSec = b.getSeconds();
-        int bMin = b.getMinutes()*60;
-        int bHor = b.getHours()*60*60;
+        long timeDelta = (Long.parseLong(tempoF) - Long.parseLong(tempoI));
 
-        int aTotalSec = aSec+aMin+aHor;
-        int bTotalSec = bSec+bMin+bHor;
-
-        int timeDelta = bTotalSec - aTotalSec;
+        System.out.println("-------->"+velMed);
 
         double velMedFinal = velMed/timeDelta;
-
 
 
         rn.setVelocidadeMedia((velMedFinal*3.6)+"");
@@ -226,6 +239,11 @@ public class MainActivity extends AppCompatActivity implements RVInterface{
     public void onItemClick(int position) {
         Intent intent = new Intent(MainActivity.this, MainActivity2.class);
         intent.putExtra("POS", position);
+
+        RunModel runModel = readRunFromFile(position+"");
+
+        intent.putExtra("myRun", runModel);
+
 
         startActivity(intent);
     }
