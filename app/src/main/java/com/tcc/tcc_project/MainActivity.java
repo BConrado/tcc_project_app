@@ -30,6 +30,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -139,14 +140,66 @@ public class MainActivity extends AppCompatActivity implements RVInterface{
         // read from file
         List<List<String>> corrida = mapcorridas.get(id);
 
+
         // Latitude Inicial e Final
         // Longitude Inicial e Final
         // Array de Velocidades
         // Array com x, array com y e array com z
 
+        // "id;latitude;longitude;speed;timestamp;x;y;z\n"
+        //  0    1         2         3     4      5,6,7
+        String latI = corrida.get(0).get(1);
+        String lngI = corrida.get(0).get(2);
+        String latF = corrida.get(corrida.size()-1).get(1);
+        String lngF = corrida.get(corrida.size()-1).get(2);
+
+        rn.setDistancia(rn.distancia(latI, lngI, latF, lngF));
 
 
+        ArrayList<String> velocidades = new ArrayList<>();
 
+        for (int i = 0; i < corrida.size(); i++){
+            velocidades.add(corrida.get(i).get(3));
+        }
+        rn.setVelocidades(velocidades);
+
+
+        ArrayList<Double> magnitudes = new ArrayList<>();
+
+        for (int i = 0; i < corrida.size(); i++){
+            float x = Float.parseFloat(corrida.get(i).get(5));
+            float y = Float.parseFloat(corrida.get(i).get(6));
+            float z = Float.parseFloat(corrida.get(i).get(7));
+
+            float [] xyz = new float []{x,y,z};
+            magnitudes.add(rn.magnitude(xyz));
+        }
+
+        String velMed;
+
+        String tempoI = corrida.get(0).get(4);
+        String tempoF = corrida.get(corrida.size()-1).get(4);
+
+        Timestamp a = new Timestamp(Long.parseLong(tempoI));
+        Timestamp b = new Timestamp(Long.parseLong(tempoF));
+
+        int aSec = a.getSeconds();
+        int aMin = a.getMinutes()*60;
+        int aHor = a.getHours()*60*60;
+
+        int bSec = b.getSeconds();
+        int bMin = b.getMinutes()*60;
+        int bHor = b.getHours()*60*60;
+
+        int aTotalSec = aSec+aMin+aHor;
+        int bTotalSec = bSec+bMin+bHor;
+
+        String mediaVel;
+
+
+        //rn.setVelocidadeMedia((velMed*3.6)+"");
+
+        rn.setMagnitudes(magnitudes);
 
         return rn;
     }
